@@ -103,9 +103,9 @@ const expected = {
 
 describe("Checking Rules", function () {
   it("Test", function () {
-    let result = rules.rule1(cd, td, oc);
+    let result = rules.isCodeApplicable(cd, td, oc);
     assert.deepEqual(result, expected);
   });
 });
 
-//console.log(rules.rule1(cd, td, oc));
+//console.log(rules.isCodeApplicable(cd, td, oc));

@@ -1,6 +1,6 @@
 var _ = require("lodash");
 
-const rule1 = function (cd, td, oc) {
+const isCodeApplicable = function (cd, td, oc) {
   //console.log("Inside rule1");
   if (oc.termsFilter.channel.includes(td.channel)) return rule2(cd, td, oc);
   else
@@ -178,7 +178,7 @@ let cd = {
 };
 
 module.exports = {
-  rule1,
+  isCodeApplicable,
   rule2,
   rule3,
   rule4,
@@ -255,5 +255,5 @@ let oc = {
     ],
   },
 };
-console.log(rule1(cd, td, oc));
+console.log(isCodeApplicable(cd, td, oc));
 */
