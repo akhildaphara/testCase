@@ -117,7 +117,7 @@ let td11 = {
 };
 let oc11 = {};
 
-function rule1(cd, td, oc) {
+const rule1 = function (cd, td, oc) {
   console.log("Inside rule1");
   if (oc.termsFilter.channel.includes(td.channel)) return rule2(cd, td, oc);
   else
@@ -129,9 +129,9 @@ function rule1(cd, td, oc) {
       applicable: "N",
       message: `Channel 'PORTAL' is Not Applicable for STUDENT,  Aviailable Channels ["branch","mobile"]`,
     };
-}
+};
 
-function rule2(cd, td, oc) {
+const rule2 = function (cd, td, oc) {
   console.log("Inside rule2");
   if (oc.termsFilter.transTypeCode.includes(td.transTypeCode)) return true;
   else
@@ -143,9 +143,9 @@ function rule2(cd, td, oc) {
       applicable: "N",
       message: `Transaction Type SVC-R is not Applicable for STUDENT, Available Transaction Types ["CN-SALE","SVC-S","TT-SALE","DD-SALE"]`,
     };
-}
+};
 
-function rule3(cd, td, oc) {
+const rule3 = function (cd, td, oc) {
   console.log("Inside rule3");
   if (
     _.intersection(oc.termsFilter.customerCategory, td.customerCategory)
@@ -161,9 +161,9 @@ function rule3(cd, td, oc) {
       applicable: "N",
       message: `Customer Category ["EMPLOYEE",   "WEALTH"]" is Not Applicable Student Available Customer Categories`,
     };
-}
+};
 
-function rule4(cd, td, oc) {
+const rule4 = function (cd, td, oc) {
   console.log("Inside rule4");
   let cur = [];
   _.forEach(oc3.termsFilter.currency, (currency) => {
@@ -179,9 +179,9 @@ function rule4(cd, td, oc) {
       applicable: "N",
       message: `Currency USD is Not Applicable STUDENT Available Currencies  [{"currCode":"INR","minAmount":"","maxAmount":"","discount":""},{"currCode":"EUR","minAmount":"","maxAmount":"","discount":""},{"currCode":"GBP","minAmount":"","maxAmount":"","discount":""}]`,
     };
-}
+};
 
-function rule5(cd, td, oc) {
+const rule5 = function (cd, td, oc) {
   let condition = false;
   if (oc.minMaxAmountType == "LCY") {
     if (
@@ -202,9 +202,9 @@ function rule5(cd, td, oc) {
       message:
         "LCY Amount 115965 is Not with in Range STUDENT Range is form 1000",
     };
-}
+};
 
-function rule6(cd, td, oc) {
+const rule6 = function (cd, td, oc) {
   let condition = false;
 
   if (oc.minMaxAmountType == "FCY") {
@@ -225,9 +225,9 @@ function rule6(cd, td, oc) {
       applicable: "N",
       message: "FCY Amount",
     };
-}
+};
 
-function rule7(cd, td, oc) {
+const rule7 = function (cd, td, oc) {
   if (
     Date.parse(td.transDate) >= Date.parse(oc.startDateTime) &&
     Date.parse(td.transDate) <= Date.parse(oc.endDateTime)
@@ -242,9 +242,9 @@ function rule7(cd, td, oc) {
       message:
         "Transaction Date 1/03/2020 is Not Within Range Student Range is form 01-05-2020 00:00:00 to 01-07-2020 00:00:00 ",
     };
-}
+};
 
-function rule8(cd, td, oc) {
+const rule8 = function (cd, td, oc) {
   let condition = true;
   let cur = [];
   _.forEach(cd.usedCodes, (code) => {
@@ -275,6 +275,6 @@ function rule8(cd, td, oc) {
       message:
         "Customer has already used  maximim no of usages  (selectedOfferCode.maximumUsagePerCustomer) available for offer code <selectedOfferCode.codeName>",
     };
-}
+};
 
 //console.log(rule1(cd3, td3, oc3));
