@@ -45,7 +45,7 @@ let oc = {
   minimumINRAmount: "1000",
   maximumINRAmount: "1000000",
   maximumTotalUsage: "100000",
-  maximumUsagePerCustomer: "1",
+  maximumUsagePerCustomer: "5",
   rateApplyType: "GBL",
   applicableRateMargin: "50",
   chargesDiscount: {
@@ -58,7 +58,7 @@ let oc = {
     rateDiscountOrMargin: "50",
   },
   termsFilter: {
-    channel: ["branch", "mobile"],
+    channel: ["branch", "mobile", "PORTAL"],
     transTypeCode: ["CN-SALE", "SVC-S", "SVC-R", "TT-SALE", "DD-SALE"],
     customerCategory: ["STUDENT", "EMPLOYEE"],
     currency: [
@@ -84,14 +84,6 @@ let oc = {
   },
 };
 
-const output = {
-  requestID: "1",
-  codeType: "D",
-  validFor: "RC",
-  codeName: "STUDENT",
-  applicable: "N",
-  message: `Channel 'PORTAL' is Not Applicable for STUDENT,  Aviailable Channels ["branch","mobile"]`,
-};
 const expected = {
   requestID: "1",
   codeType: "D",

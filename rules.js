@@ -1,7 +1,8 @@
-var _ = require("lodash");
+//var _ = require("lodash");
+// TODO: use vanila js here
 
 const isCodeApplicable = function (cd, td, oc) {
-  //console.log("Inside rule1");
+  console.log("Inside rule1");
   if (oc.termsFilter.channel.includes(td.channel)) return rule2(cd, td, oc);
   else
     return {
@@ -15,8 +16,9 @@ const isCodeApplicable = function (cd, td, oc) {
 };
 
 const rule2 = function (cd, td, oc) {
-  //console.log("Inside rule2");
-  if (oc.termsFilter.transTypeCode.includes(td.transTypeCode)) return true;
+  console.log("Inside rule2");
+  if (oc.termsFilter.transTypeCode.includes(td.transTypeCode))
+    return rule3(cd, td, oc);
   else
     return {
       requestID: "1",
@@ -29,12 +31,13 @@ const rule2 = function (cd, td, oc) {
 };
 
 const rule3 = function (cd, td, oc) {
-  //console.log("Inside rule3");
+  console.log("Inside rule3");
   if (
-    _.intersection(oc.termsFilter.customerCategory, td.customerCategory)
-      .length > 0
+    oc.termsFilter.customerCategory.filter((value) =>
+      cd.customerCategory.includes(value)
+    ).length > 0
   )
-    return rule3(cd, td, oc);
+    return rule4(cd, td, oc);
   else
     return {
       requestID: "1",
@@ -47,12 +50,13 @@ const rule3 = function (cd, td, oc) {
 };
 
 const rule4 = function (cd, td, oc) {
-  //console.log("Inside rule4");
-  let cur = [];
-  _.forEach(oc3.termsFilter.currency, (currency) => {
-    cur.push(currency.currCode);
-  });
-  if (cur.includes(td3.currency)) return rule5(cd, td, oc);
+  console.log("Inside rule4");
+  if (
+    oc.termsFilter.currency.filter(
+      (currency) => currency.currCode == td.currency
+    ).length > 0
+  )
+    return rule5(cd, td, oc);
   else
     return {
       requestID: "1",
@@ -65,6 +69,7 @@ const rule4 = function (cd, td, oc) {
 };
 
 const rule5 = function (cd, td, oc) {
+  console.log("Inside rule5");
   let condition = false;
   if (oc.minMaxAmountType == "LCY") {
     if (
@@ -88,18 +93,19 @@ const rule5 = function (cd, td, oc) {
 };
 
 const rule6 = function (cd, td, oc) {
+  console.log("Inside rule6");
   let condition = false;
 
   if (oc.minMaxAmountType == "FCY") {
     if (
-      td.lcyAmount >= oc.minimumINRAmount / td.rate &&
-      td.lcyAmount <= oc.maximumINRAmount / td.rate
+      td.lcyAmount >= oc.minimumINRAmount &&
+      td.lcyAmount <= oc.maximumINRAmount
     ) {
       condition = true;
-      return rule7(cd, td, oc);
     }
-  }
-  if (!condition)
+  } else condition = true;
+  if (condition) return rule7(cd, td, oc);
+  else
     return {
       requestID: "1",
       codeType: "D",
@@ -111,6 +117,7 @@ const rule6 = function (cd, td, oc) {
 };
 
 const rule7 = function (cd, td, oc) {
+  console.log("Inside rule7");
   if (
     Date.parse(td.transDate) >= Date.parse(oc.startDateTime) &&
     Date.parse(td.transDate) <= Date.parse(oc.endDateTime)
@@ -128,19 +135,15 @@ const rule7 = function (cd, td, oc) {
 };
 
 const rule8 = function (cd, td, oc) {
+  console.log("Inside rule8");
   let condition = true;
-  let cur = [];
-  _.forEach(cd.usedCodes, (code) => {
-    cur.push(code.usedCount);
-  });
-  console.log(cur);
-  for (let i = 0; i < cur.length; i++) {
-    if (oc.maximumUsagePerCustomer < cur[i]) {
-      condition = false;
-      break;
-    }
-  }
-  if (condition)
+  if (
+    cd.usedCodes.filter((code) => code.usedCount > oc.maximumUsagePerCustomer)
+      .length > 0
+  )
+    condition = false;
+  if (condition) {
+    console.log("All rules matched!");
     return {
       requestID: "1",
       codeType: "D",
@@ -149,7 +152,7 @@ const rule8 = function (cd, td, oc) {
       applicable: "Y",
       message: "",
     };
-  else
+  } else
     return {
       codeType: "D",
       validFor: "RC",
@@ -158,6 +161,17 @@ const rule8 = function (cd, td, oc) {
       message:
         "Customer has already used  maximim no of usages  (selectedOfferCode.maximumUsagePerCustomer) available for offer code <selectedOfferCode.codeName>",
     };
+};
+
+module.exports = {
+  isCodeApplicable,
+  rule2,
+  rule3,
+  rule4,
+  rule5,
+  rule6,
+  rule7,
+  rule8,
 };
 
 let cd = {
@@ -176,19 +190,6 @@ let cd = {
     },
   ],
 };
-
-module.exports = {
-  isCodeApplicable,
-  rule2,
-  rule3,
-  rule4,
-  rule5,
-  rule6,
-  rule7,
-  rule8,
-};
-
-/*
 let td = {
   requestID: 1,
   transDate: "01-04-2020",
@@ -217,7 +218,7 @@ let oc = {
   minimumINRAmount: "1000",
   maximumINRAmount: "1000000",
   maximumTotalUsage: "100000",
-  maximumUsagePerCustomer: "1",
+  maximumUsagePerCustomer: "5",
   rateApplyType: "GBL",
   applicableRateMargin: "50",
   chargesDiscount: {
@@ -230,7 +231,7 @@ let oc = {
     rateDiscountOrMargin: "50",
   },
   termsFilter: {
-    channel: ["branch", "mobile"],
+    channel: ["branch", "mobile", "PORTAL"],
     transTypeCode: ["CN-SALE", "SVC-S", "SVC-R", "TT-SALE", "DD-SALE"],
     customerCategory: ["STUDENT", "EMPLOYEE"],
     currency: [
@@ -256,4 +257,3 @@ let oc = {
   },
 };
 console.log(isCodeApplicable(cd, td, oc));
-*/
